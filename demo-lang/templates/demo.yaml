@@ -1,0 +1,31 @@
+# templates/demo.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.app.name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  # 1. value, function, pipeline
+  appName: {{ .Values.app.name | upper | quote }}
+  chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
+  missing: {{ .Values.app.region | default "ap-south-1" | quote }}
+  # 2. if / else (false, 0, "", empty list and empty map are all false)
+  {{- if .Values.app.debug }}
+  logMode: verbose
+  {{- else }}
+  logMode: normal
+  {{- end }}
+  # 3. with: changes the meaning of "." to .Values.app inside the block
+  {{- with .Values.app }}
+  owner: {{ .name }}-team
+  release: {{ $.Release.Name }}
+  {{- end }}
+  # 4. range over a map (keys are visited in sorted order)
+  {{- range $key, $value := .Values.env }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  # 5. range over a list with an index
+  hosts: |
+    {{- range $i, $host := .Values.hosts }}
+    {{ $i }}={{ $host }}
+    {{- end }}

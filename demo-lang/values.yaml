@@ -1,0 +1,10 @@
+# values.yaml
+app:
+  name: orders
+  debug: false
+env:
+  LOG_LEVEL: info
+  CACHE_TTL: "300"
+hosts:
+  - orders.example.com
+  - api.example.com
